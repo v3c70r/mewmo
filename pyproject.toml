@@ -1,0 +1,16 @@
+[tool.setuptools.packages.find]
+include = ["mewmo*"]
+
+[project]
+name = "mewmo"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "chromadb>=1.5.8",
+    "faster-whisper>=1.2.1",
+    "httpx>=0.28.1",
+    "pymupdf>=1.27.2.2",
+    "sentence-transformers>=5.4.1",
+]
