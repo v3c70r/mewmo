@@ -1,12 +1,10 @@
-"""Thin LLM client for the local llama.cpp server (OpenAI-compatible)."""
+"""Thin LLM client for any OpenAI-compatible server (llama.cpp, vLLM, LM Studio, etc.)."""
 
 import re
 import json
 import httpx
 
-BASE_URL = "http://127.0.0.1:8081/v1"
-MODEL = "qwen3.5-8b"
-TIMEOUT = 120.0  # seconds; long enough for large documents
+from mewmo.config import LLM_BASE_URL, LLM_API_KEY, LLM_MODEL, LLM_TIMEOUT
 
 
 def strip_think(text: str) -> str:
@@ -19,7 +17,6 @@ def parse_json(raw: str) -> dict | list:
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
-        # Try to find a JSON object or array embedded in surrounding text
         match = re.search(r"(\[.*\]|\{.*\})", raw, re.DOTALL)
         if match:
             return json.loads(match.group())
@@ -29,12 +26,13 @@ def parse_json(raw: str) -> dict | list:
 def chat(messages: list[dict], temperature: float = 0.0) -> str:
     """Send a chat request, return stripped text content."""
     payload = {
-        "model": MODEL,
+        "model": LLM_MODEL,
         "messages": messages,
         "temperature": temperature,
     }
-    with httpx.Client(timeout=TIMEOUT) as client:
-        r = client.post(f"{BASE_URL}/chat/completions", json=payload)
+    headers = {"Authorization": f"Bearer {LLM_API_KEY}"}
+    with httpx.Client(timeout=LLM_TIMEOUT) as client:
+        r = client.post(f"{LLM_BASE_URL}/chat/completions", json=payload, headers=headers)
         r.raise_for_status()
     raw = r.json()["choices"][0]["message"]["content"]
     return strip_think(raw)

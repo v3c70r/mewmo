@@ -11,6 +11,10 @@ dependencies = [
     "chromadb>=1.5.8",
     "faster-whisper>=1.2.1",
     "httpx>=0.28.1",
+    "mcp>=1.27.0",
     "pymupdf>=1.27.2.2",
     "sentence-transformers>=5.4.1",
 ]
+
+[project.scripts]
+mewmo-server = "mewmo.server:main"
